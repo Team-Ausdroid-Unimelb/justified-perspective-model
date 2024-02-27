@@ -41,6 +41,8 @@
         ; (= (:ontic (= (shared a) 2)) 1)
         (= (:epistemic b [b] (= (secret a) 't')) 1)
         (= (:epistemic b [c] (= (secret a) 'f')) 1)
+        (= (:epistemic b [d] (= (secret a) 't')) 1)
+        (= (:epistemic b [d] (= (secret c) 't')) 1)
         ; (= (:epistemic b [d] (= (secret a) 't')) 0)
         ; (= (:epistemic k [b] k [a] (= (v p) 't')) 0)
         ; (= (:epistemic s [b] s [a] (= (v p) 't')) 2)
@@ -53,7 +55,7 @@
 
     (:domains
         (agent_at integer [1,2])
-        (shared integer [0,2])
+        (shared integer [0,2]) 
         (secret enumerate ['t','f'])
         ;(epistemic epistemic ['1','0','2']) true false unknown
     )

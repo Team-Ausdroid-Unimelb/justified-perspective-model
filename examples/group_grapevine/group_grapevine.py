@@ -144,7 +144,10 @@ class ExternalFunction:
                 # Since in Grapevine domain, there is only two rooms
                 # agent will know others location if they are in the same room
                 # agent will also know others location if they are not in the same room
+                
+                
                 return PDDL_TERNARY.TRUE
+                pass 
 
 
             agt_loc_str = AGENT_LOC_PREFIX+agt_index
