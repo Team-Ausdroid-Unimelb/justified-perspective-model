@@ -46,6 +46,7 @@ class Search:
         
         self.logger.info("starting searching using %s",LOGGER_NAME)
         max_goal_num = len(problem.goals.ontic_dict)+len(problem.goals.epistemic_dict)
+        print(max_goal_num)
         # self.logger.info(f'the initial is {problem.initial_state}')
         # self.logger.info(f'the variables are {problem.variables}')
         # self.logger.info(f'the domains are {problem.domains}')
@@ -101,8 +102,8 @@ class Search:
             # self.logger.debug(actions)
             filtered_action_names = filterActionNames(problem,all_actions)
             
-            ontic_pre_dict = {}
-            epistemic_pre_dict = {}
+            ontic_pre_dict = dict()
+            epistemic_pre_dict = dict()
             for action_name in filtered_action_names:
                 action = all_actions[action_name]
                 ontic_pre_dict.update({action_name:action.a_preconditions.ontic_dict})
@@ -265,11 +266,18 @@ class Search:
         path = node.path
         
         is_goal,epistemic_dict,goal_dict = problem.isGoal(state,path,p_path)
-        
+        print(goal_dict)
         remain_goal_number = list(goal_dict.values()).count(False)
 
+
+
         for key,value in goal_dict.items():
-            if str(PDDL_TERNARY.UNKNOWN.value) in key and not value:
+            # print(key)
+            
+            # if str(PDDL_TERNARY.UNKNOWN.value) in key and not value:
+            if key in problem.goals.epistemic_dict.keys() \
+                and problem.goals.epistemic_dict[key].value == PDDL_TERNARY.UNKNOWN \
+                    and not value:
                 self.logger.debug('Unknown been updated, goal is impossible')
                 return 9999,epistemic_dict      
         return remain_goal_number,epistemic_dict
