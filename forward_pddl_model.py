@@ -140,53 +140,71 @@ class Problem:
             value = v.value
             if symbol == "=":
                 
-                    if not state[variable_name] == v_value:
-                        is_goal = False
-                        goal_dict.update({k:False})
-                    else:
-                        goal_dict.update({k:True})
+                if not state[variable_name] == v_value:
+                    goal_dict.update({k:False})
+                else:
+                    goal_dict.update({k:True})
+            elif symbol == ">":
+                if not state[variable_name] > v_value:
+                    goal_dict.update({k:False})
+                else:
+                    goal_dict.update({k:True})
+            elif symbol == "<":
+                if not state[variable_name] < v_value:
+                    goal_dict.update({k:False})
+                else:
+                    goal_dict.update({k:True})
             
-        # adding epistemic checker here
-        current_time = datetime.now()
-        self.epistemic_calls +=1
-
-        # if self.epistemic_model.goal_p_keys == None:
-        #     # goal perspective keys has not generated yet
-        #     self.epistemic_model.goal_p_keys = self.epistemic_model.allPerspectiveKeys(epistemic_goals_dict=self.goals.epistemic_dict,prefix="")
-        #     self.epistemic_model.all_p_keys = self.epistemic_model.all_p_keys + self.epistemic_model.goal_p_keys
-        epistemic_dict = \
-            self.epistemic_model.epistemicGoalsHandler(self.goals.epistemic_dict,"",path,p_path)
-        self.epistemic_call_time += datetime.now() - current_time
-        
-        for k,ep_obj in self.goals.epistemic_dict.items():
-            v = ep_obj.value
-            if not epistemic_dict[k] == v:
-                # is_goal = False
-                goal_dict.update({k:False})
-            else:
-                goal_dict.update({k:True})
-                
-        # self.logger.debug("epistemic_dict {epistemic_dict}")
-        # self.logger.debug("p_dict {p_dict}")
-        # remainning goal proposition is checked by False value in goal_dict
-        self.logger.debug(p_path)
-        self.logger.debug(p_path.keys())
-        self.logger.debug(action_list_str)
-        
-        # self.logger.info("p_path and action [%s]  is: \n [%s]",action_list_str,p_path)
-        
-        
-        assert action_list_str in p_path.keys(), "action string not in p_path"
+            
+            
         p_dict = dict()
-        # if "-,,move_right-a,sharing-b,move_right-b" in action_list_str:
-        # if "-,,single_peek-a,subtraction1-c,return-a,single_peek-b" in action_list_str:
-        #     self.logger.info("p_path for action [%s]  is: \n [%s]",action_list_str,p_path[action_list_str])
-        # self.logger.info("p_path for action [%s]  is: \n [%s]",action_list_str,p_path[action_list_str])
-        for k,p in p_path[action_list_str].items():
-            temp_p = dict()
-            temp_p["observation"] = p["observation"][-1]
-            temp_p["perspectives"] = p["perspectives"][-1]
-            p_dict[k] = temp_p
+        epistemic_dict = dict()
+
+        if not self.goals.epistemic_dict == dict():
+
+
+
+            # adding epistemic checker here
+            current_time = datetime.now()
+            self.epistemic_calls +=1
+
+            # if self.epistemic_model.goal_p_keys == None:
+            #     # goal perspective keys has not generated yet
+            #     self.epistemic_model.goal_p_keys = self.epistemic_model.allPerspectiveKeys(epistemic_goals_dict=self.goals.epistemic_dict,prefix="")
+            #     self.epistemic_model.all_p_keys = self.epistemic_model.all_p_keys + self.epistemic_model.goal_p_keys
+            epistemic_dict = \
+                self.epistemic_model.epistemicGoalsHandler(self.goals.epistemic_dict,"",path,p_path)
+            self.epistemic_call_time += datetime.now() - current_time
+            
+            for k,ep_obj in self.goals.epistemic_dict.items():
+                v = ep_obj.value
+                if not epistemic_dict[k] == v:
+                    # is_goal = False
+                    goal_dict.update({k:False})
+                else:
+                    goal_dict.update({k:True})
+                    
+            # self.logger.debug("epistemic_dict {epistemic_dict}")
+            # self.logger.debug("p_dict {p_dict}")
+            # remainning goal proposition is checked by False value in goal_dict
+            self.logger.debug(p_path)
+            self.logger.debug(p_path.keys())
+            self.logger.debug(action_list_str)
+            
+            # self.logger.info("p_path and action [%s]  is: \n [%s]",action_list_str,p_path)
+            
+            assert action_list_str in p_path.keys(), "action string not in p_path"
+            
+            # if "-,,move_right-a,sharing-b,move_right-b" in action_list_str:
+            # if "-,,single_peek-a,subtraction1-c,return-a,single_peek-b" in action_list_str:
+            #     self.logger.info("p_path for action [%s]  is: \n [%s]",action_list_str,p_path[action_list_str])
+            # self.logger.info("p_path for action [%s]  is: \n [%s]",action_list_str,p_path[action_list_str])
+            for k,p in p_path[action_list_str].items():
+                temp_p = dict()
+                temp_p["observation"] = p["observation"][-1]
+                temp_p["perspectives"] = p["perspectives"][-1]
+                p_dict[k] = temp_p
+        print(goal_dict)
         return p_dict,epistemic_dict,goal_dict
     
     def getAllActions(self,state,path):
@@ -347,6 +365,7 @@ class Problem:
                             pre_dict[action_name].update({k+":"+str(e):True})
                     else:
                         self.logger.error(f'variable {k} not in state {state}')
+                        flag_dict[action_name] = False
                         
                 except:
                     self.logger.error("Error when checking precondition: [%s]\n with state: [%s]", ontic_pre,state)
@@ -359,64 +378,66 @@ class Problem:
 
 
 
-        self.logger.debug("checking all epistemic preconditions")
+        self.logger.debug("checking all epistemic preconditions if there is any")
         # get all ep_pre into one list
         temp_ep_dict = dict()
         # this part need to be changed
         self.logger.debug("epistemic_pre_dict: [%s]",epistemic_pre_dict)
+
+        # if not epistemic_pre_dict == dict():
         for action_name,ep_dict in epistemic_pre_dict.items():
             # for ep in ep_pre.items():
             temp_ep_dict.update(ep_dict) 
-            
-        self.logger.debug("epistemic preconditions list [%s]",epistemic_pre_dict)    
-        current_time = datetime.now()
-        self.epistemic_calls +=1
-        # if self.epistemic_model.pre_p_keys == None:
-        #     # precondition perspective keys has not generated yet
-        #     self.epistemic_model.pre_p_keys = self.epistemic_model.allPerspectiveKeys(epistemic_goals_dict=temp_ep_dict,prefix="")
-        #     self.epistemic_model.all_p_keys = self.epistemic_model.all_p_keys + self.epistemic_model.pre_p_keys
-        epistemic_dict = self.epistemic_model.epistemicGoalsHandler(temp_ep_dict,"",path,p_path)
-        self.epistemic_call_time += datetime.now() - current_time
+        
 
-
-        for action_name,ep_dict in epistemic_pre_dict.items():
-
-            for k,ep_obj in ep_dict.items():
-                v = ep_obj.value
-                if not epistemic_dict[k] == v:
-                    flag_dict[action_name] = False
-                    pre_dict[action_name].update({k:False})
-                    # pre_flag = False
-                    # pre_dict.update({k+" "+str(v):False})
-                else:
-                    pre_dict[action_name].update({k:True})
-        
-        
-        self.logger.debug("flag_dict: [%s]",flag_dict)
-        self.logger.debug("epistemic_dict: [%s]",epistemic_dict)
-        self.logger.debug("pre_dict: [%s]",pre_dict)
-        self.logger.debug("p_path.keys(): [%s]",p_path.keys())
-        # generate perspectives for duplicate check
-        action_list = [a for s,a in path]
-        action_list_str = ActionList2DictKey(action_list)
-        
-        
-        # if "-,,move_right-a,sharing-b,move_right-b" in action_list_str:
-        #     self.logger.info("p_path for action [%s]  is: \n [%s]",action_list_str,p_path[action_list_str])
-        # if "-,,single_peek-a,subtraction1-c,return-a,single_peek-b" in action_list_str:
-        #     self.logger.info("p_path for action [%s]  is: \n [%s]",action_list_str,p_path[action_list_str])
-        
-        
-        assert action_list_str in p_path.keys(), "action string not in p_path"
+        epistemic_dict = dict()
         p_dict = dict()
-        for k,p in p_path[action_list_str].items():
-            temp_p = dict()
-            temp_p["observation"] = p["observation"][-1]
-            temp_p["perspectives"] = p["perspectives"][-1]
-            p_dict[k] = temp_p
-        # return p_dict,epistemic_dict,goal_dict
+        if not temp_ep_dict == dict():
 
-        self.logger.setLevel(logging.INFO)
+
+            self.logger.debug("epistemic preconditions list [%s]",epistemic_pre_dict)    
+            current_time = datetime.now()
+            self.epistemic_calls +=1
+            # if self.epistemic_model.pre_p_keys == None:
+            #     # precondition perspective keys has not generated yet
+            #     self.epistemic_model.pre_p_keys = self.epistemic_model.allPerspectiveKeys(epistemic_goals_dict=temp_ep_dict,prefix="")
+            #     self.epistemic_model.all_p_keys = self.epistemic_model.all_p_keys + self.epistemic_model.pre_p_keys
+            epistemic_dict = self.epistemic_model.epistemicGoalsHandler(temp_ep_dict,"",path,p_path)
+            self.epistemic_call_time += datetime.now() - current_time
+
+
+            for action_name,ep_dict in epistemic_pre_dict.items():
+
+                for k,ep_obj in ep_dict.items():
+                    v = ep_obj.value
+                    if not epistemic_dict[k] == v:
+                        flag_dict[action_name] = False
+                        pre_dict[action_name].update({k:False})
+                        # pre_flag = False
+                        # pre_dict.update({k+" "+str(v):False})
+                    else:
+                        pre_dict[action_name].update({k:True})
+            
+            
+            self.logger.debug("flag_dict: [%s]",flag_dict)
+            self.logger.debug("epistemic_dict: [%s]",epistemic_dict)
+            self.logger.debug("pre_dict: [%s]",pre_dict)
+            self.logger.debug("p_path.keys(): [%s]",p_path.keys())
+            # generate perspectives for duplicate check
+            action_list = [a for s,a in path]
+            action_list_str = ActionList2DictKey(action_list)
+            
+            assert action_list_str in p_path.keys(), "action string not in p_path"
+            p_dict = dict()
+            for k,p in p_path[action_list_str].items():
+                temp_p = dict()
+                temp_p["observation"] = p["observation"][-1]
+                temp_p["perspectives"] = p["perspectives"][-1]
+                p_dict[k] = temp_p
+            # return p_dict,epistemic_dict,goal_dict
+
+            self.logger.setLevel(logging.INFO)
+        # print(flag_dict)
         return flag_dict,epistemic_dict,p_dict
         # return flag_dict,epistemic_dict,pre_dict
 
@@ -533,6 +554,7 @@ class Problem:
             else:
                 
                 domain_name = self.variables[v_name].v_domain_name
+                # print(self.domains)
                 # self.logger.debug('update {v_name} with domain {domain_name} on type {self.domains[domain_name].d_type} ')
                 if self.domains[domain_name].d_type == D_TYPE.INTEGER:
                     if re.search("[a-z]|[A-Z]", update):
