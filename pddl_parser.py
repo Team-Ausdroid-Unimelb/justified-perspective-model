@@ -293,7 +293,7 @@ class PDDLParser:
                     domain_str = domain_str[1:-1:].split(' ')
                     if not domain_str[1] in ['enumerate','integer','string']:
                         self.logger.error(f"domain {domain_str[0]}'s basic_type {domain_str[1]} does not exist")
-                        assert(f"domain {domain_str[0]}'s basic_type {domain_str[1]} does not exist")
+                        raise ValueError(f"domain {domain_str[0]}'s basic_type {domain_str[1]} does not exist")
                     else:
                         if "'" in domain_str[2]:
                             value = domain_str[2].replace("'","")[1:-1:].split(",")
