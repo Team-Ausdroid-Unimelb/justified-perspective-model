@@ -204,7 +204,6 @@ class Problem:
                 temp_p["observation"] = p["observation"][-1]
                 temp_p["perspectives"] = p["perspectives"][-1]
                 p_dict[k] = temp_p
-        print(goal_dict)
         return p_dict,epistemic_dict,goal_dict
     
     def getAllActions(self,state,path):
@@ -348,29 +347,60 @@ class Problem:
             flag_dict[action_name] = True
             self.logger.debug('checking ontic precondition [%s] for action [%s]',ontic_pre,action_name)
             for key,ontic_obj in ontic_pre.items():
-                try:
+                # try:
                     k = ontic_obj.variable_name
                     e = ontic_obj.v_value
                     if k in state.keys():
                         if e in state.keys():
+                            self.logger.debug("checking k [%s]=[%s] and e [%s]=[%s]",k,state[k],e,state[e])
                             if not state[k] == state[e]:
-                                flag_dict[action_name] = False
-                                pre_dict[action_name].update({k+":"+str(e):False})
+                                if ontic_obj.value:
+                                    flag_dict[action_name] = False
+                                    self.logger.debug("False: checking k [%s]=[%s] and e [%s]=[%s]",k,state[k],e,state[e])
+                                    pre_dict[action_name].update({k+":"+str(e):False})
+                                    break
+                                else:
+                                    self.logger.debug("True")
+                                    # pre_dict[action_name].update({k+":"+str(e):False})
+                                
                             else:
-                                pre_dict[action_name].update({k+":"+str(e):True})
+                                if not ontic_obj.value:
+                                    flag_dict[action_name] = False
+                                    self.logger.debug("False: checking k [%s]=[%s] and e [%s]=[%s]",k,state[k],e,state[e])
+                                    pre_dict[action_name].update({k+":"+str(e):False})
+                                    break
+                                else:
+                                    self.logger.debug("True")
                         elif not state[k] == e:
-                            flag_dict[action_name] = False
-                            pre_dict[action_name].update({k+":"+str(e):False})
+                            self.logger.debug("state k [%s] is [%s] and e is [%s]; object value is [%s] ",k,state[k],e,ontic_obj.value)
+                            if ontic_obj.value:
+                                flag_dict[action_name] = False
+                                self.logger.debug("False: state k [%s] is [%s] and e is [%s]; object value is [%s] ",k,state[k],e,ontic_obj.value)
+                                pre_dict[action_name].update({k+":"+str(e):False})
+                                break
+                            else:
+                                self.logger.debug("True")
+                                # pre_dict[action_name].update({k+":"+str(e):False})
                         else:
-                            pre_dict[action_name].update({k+":"+str(e):True})
+                            if not ontic_obj.value:
+                                flag_dict[action_name] = False
+                                self.logger.debug("False")
+                                pre_dict[action_name].update({k+":"+str(e):False})
+                                break
+                            else:
+                                self.logger.debug("True")
                     else:
-                        self.logger.error(f'variable {k} not in state {state}')
+                        # self.logger.error(f'variable {k} not in state {state}')
                         flag_dict[action_name] = False
+                        pre_dict[action_name].update({k+":"+str(e):False})
+                        break
                         
-                except:
-                    self.logger.error("Error when checking precondition: [%s]\n with state: [%s]", ontic_pre,state)
+                # except Exception as e:
+                #     self.logger.error(e)
+                #     self.logger.error("Error when checking precondition: [%s]\n with state: [%s]", ontic_pre,state)
                     
-                    flag_dict[action_name] = False
+                #     flag_dict[action_name] = False
+                #     pre_dict[action_name].update({k+":"+str(e):False})
         self.logger.debug("pre_dict [%s]", pre_dict)
             
         # adding epistemic checker here
@@ -413,7 +443,6 @@ class Problem:
                     if not epistemic_dict[k] == v:
                         flag_dict[action_name] = False
                         pre_dict[action_name].update({k:False})
-                        # pre_flag = False
                         # pre_dict.update({k+" "+str(v):False})
                     else:
                         pre_dict[action_name].update({k:True})
@@ -437,7 +466,6 @@ class Problem:
             # return p_dict,epistemic_dict,goal_dict
 
             self.logger.setLevel(logging.INFO)
-        # print(flag_dict)
         return flag_dict,epistemic_dict,p_dict
         # return flag_dict,epistemic_dict,pre_dict
 
@@ -552,16 +580,17 @@ class Problem:
             #                 break
             #         new_state[v_name] = self.domains[domain_name].d_values[(index+int(value))%len(self.domains[domain_name].d_values)]
             else:
-                
-                domain_name = self.variables[v_name].v_domain_name
-                # print(self.domains)
-                # self.logger.debug('update {v_name} with domain {domain_name} on type {self.domains[domain_name].d_type} ')
-                if self.domains[domain_name].d_type == D_TYPE.INTEGER:
-                    if re.search("[a-z]|[A-Z]", update):
-                        update = state[update]
-                    new_state[v_name] = int(update)
+                if update in state.keys():
+                     new_state[v_name] = state[update]
                 else:
-                    new_state[v_name] = update
+                    domain_name = self.variables[v_name].v_domain_name
+                    # self.logger.debug('update {v_name} with domain {domain_name} on type {self.domains[domain_name].d_type} ')
+                    if self.domains[domain_name].d_type == D_TYPE.INTEGER:
+                        if re.search("[a-z]|[A-Z]", update):
+                            update = state[update]
+                        new_state[v_name] = int(update)
+                    else:
+                        new_state[v_name] = update
 
         # self.logger.debug('new state is : {new_state}')
         return new_state
