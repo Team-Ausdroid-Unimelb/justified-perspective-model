@@ -6,7 +6,7 @@
         :precondition (and 
             (= (:ontic (= (room ?i) (room_num ?r1))) 1)
             (= (:ontic (= (connected ?r1 ?r2) 1)) 1)
-            ;(:ontic (= (searched ?r2) 1) 0)
+            (= (:ontic (= (searched ?r2) 1)) -1) ;  -1 is false, 0 is unknown
 
         )
         :effect (and 

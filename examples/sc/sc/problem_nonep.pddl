@@ -1,4 +1,4 @@
-( define
+(define
     (problem sc_110)
     (:domain sc)
 
@@ -21,8 +21,8 @@
         ; (= (connected l1 l2) 1)
         ; (= (:ontic (= (agent_at a) 2)) 1)
         (= (room a) 'r1')
-        (= (room b) 'r7')
-        (= (room c) 'r6')
+        (= (room b) 'r6')
+        (= (room c) 'r7')
         (= (room s1) 'r9')
         (= (room s2) 'r4')
         (= (room s3) 'r3')
@@ -39,26 +39,39 @@
         ;connected rooms
         (= (connected r1 r2) 1)
         (= (connected r1 r4) 1)
+
+        (= (connected r2 r1) 1)
         (= (connected r2 r3) 1)
         (= (connected r2 r5) 1)
+
         (= (connected r3 r6) 1)
-        (= (connected r4 r5) 1)
-        (= (connected r5 r6) 1)
-        (= (connected r5 r7) 1)
-        (= (connected r6 r8) 1)
-        (= (connected r7 r8) 1)
-        (= (connected r8 r9) 1)
-        (= (connected r2 r1) 1)
-        (= (connected r4 r1) 1)
         (= (connected r3 r2) 1)
+
+        (= (connected r4 r5) 1)
+        (= (connected r4 r1) 1)
+        (= (connected r4 r7) 1); missed
+
+        (= (connected r5 r6) 1)
         (= (connected r5 r2) 1)
-        (= (connected r6 r3) 1)
         (= (connected r5 r4) 1)
+        ;(= (connected r5 r7) 1) wrong
+
+        (= (connected r6 r3) 1)
         (= (connected r6 r5) 1)
-        (= (connected r7 r5) 1)
-        (= (connected r8 r6) 1)
+        (= (connected r6 r9) 1); missed
+        ; (= (connected r6 r8) 1) wrong
+
+        (= (connected r7 r8) 1)
+        ; (= (connected r7 r5) 1) wrong
+        (= (connected r7 r4) 1) ; missed
+        
+        (= (connected r8 r9) 1)
         (= (connected r8 r7) 1)
+        ; (= (connected r8 r6) 1) wrong
+        (= (connected r8 r5) 1) ; missed
+
         (= (connected r9 r8) 1)
+        (= (connected r9 r6) 1) ; missed
         ; shared stand for sharing location 
         ; of the survivors
         (= (shared s1) 'f')
@@ -83,18 +96,19 @@
     (:goal (and 
         ; all the rooms have been searched
         (= (:ontic (> (searched r1) 0)) 1)
-        ; (= (:ontic (> (searched r2) 0)) 1)
-        ; (= (:ontic (> (searched r3) 0)) 1)
-        ; (= (:ontic (> (searched r4) 0)) 1)
-        ; (= (:ontic (> (searched r5) 0)) 1)
-        ; (= (:ontic (> (searched r6) 0)) 1)
+        (= (:ontic (> (searched r2) 0)) 1)
+        (= (:ontic (> (searched r3) 0)) 1)
+        (= (:ontic (> (searched r4) 0)) 1)
+        (= (:ontic (> (searched r5) 0)) 1)
+        (= (:ontic (> (searched r6) 0)) 1)
         ; (= (:ontic (> (searched r7) 0)) 1)
         ; (= (:ontic (> (searched r8) 0)) 1)
         ; (= (:ontic (> (searched r9) 0)) 1)  
     ))
 
     (:domains
-        (room emunerate ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9'])
+        (room enumerate ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9'])
+        (room_num enumerate ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9'])
         ; (room_num integer [1,9])
         (observed enumerate ['t','f'])
         (shared enumerate ['t','f'])
