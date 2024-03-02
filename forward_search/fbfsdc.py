@@ -46,7 +46,7 @@ class Search:
         
         self.logger.info("starting searching using %s",LOGGER_NAME)
         max_goal_num = len(problem.goals.ontic_dict)+len(problem.goals.epistemic_dict)
-        print(max_goal_num)
+        # print(max_goal_num)
         # self.logger.info(f'the initial is {problem.initial_state}')
         # self.logger.info(f'the variables are {problem.variables}')
         # self.logger.info(f'the domains are {problem.domains}')
@@ -266,13 +266,11 @@ class Search:
         path = node.path
         
         is_goal,epistemic_dict,goal_dict = problem.isGoal(state,path,p_path)
-        print(goal_dict)
         remain_goal_number = list(goal_dict.values()).count(False)
 
 
 
         for key,value in goal_dict.items():
-            # print(key)
             
             # if str(PDDL_TERNARY.UNKNOWN.value) in key and not value:
             if key in problem.goals.epistemic_dict.keys() \
