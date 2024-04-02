@@ -10,16 +10,22 @@
     )
 
     (:variables
+        ;can_move: agent a is the commander, commander does not move
+        (commander [a,b,c])
         (room [a,b,c,s1,s2,s3])
         (observed [s1,s2,s3])
         (shared [s1,s2,s3])
         (searched [r1,r2,r3,r4,r5,r6,r7,r8,r9])
         (room_num [r1,r2,r3,r4,r5,r6,r7,r8,r9])
         (connected [r1,r2,r3,r4,r5,r6,r7,r8,r9] [r1,r2,r3,r4,r5,r6,r7,r8,r9])
-
     )
 
     (:init
+        ; a is the commander, and a does not move
+        (= (commander a) 1)
+        (= (commander b) 0)
+        (= (commander c) 0)
+        ; agent location assignment
         (= (room a) 'r1')
         (= (room b) 'r6')
         (= (room c) 'r7')
@@ -104,8 +110,8 @@
         ;(= (:ontic (> (searched r7) 0)) 1)
         ;(= (:ontic (> (searched r8) 0)) 1)
         ;(= (:ontic (> (searched r9) 0)) 1)  
-        (= (:epistemic b [b] (= (observed s1) 't')) 1)
-        (= (:epistemic b [b] (= (observed s2) 't')) 1)
+        (= (:epistemic b [a] (= (observed s1) 't')) 1)
+        (= (:epistemic b [a] (= (observed s2) 't')) 1)
         ; (= (:epistemic b [b] (= (observed s3) 't')) 1)
     ))
 
@@ -116,6 +122,7 @@
         (observed enumerate ['t','f'])
         (shared enumerate ['t','f'])
         (connected integer [0,1])
+        (commander integer [0,1])
         ; 0 indicates that room has not been searched neither occupied
         ; 1 indicates that room is occupied
         ; 2 indicates that room has been searched and it is not occupied 

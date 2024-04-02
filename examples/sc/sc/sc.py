@@ -104,7 +104,7 @@ class ExternalFunction:
         
         try:
             # self.logger.debug('checking seeing for agent [%s] on [%s]  in state [%s]',agt_index,var_name,state)
-            # tgt_index = variables[var_name].v_parent
+            tgt_index = variables[var_name].v_parent
             
             # # check if the agt_index can be found
             # assert(entities[agt_index].e_type==E_TYPE.AGENT)
@@ -113,6 +113,20 @@ class ExternalFunction:
             # # which mean checking location of shared (agent's own secret can be shared by others)
             # # otherwise it checking agent's current location
             # # if 'shared' in var_name or 'secret' in var_name:
+            if "observed" in var_name:
+                if state["shared-"+tgt_index] == 'f':
+                    if state["room-"+tgt_index] == state["room-"+agt_index]:
+                        return PDDL_TERNARY.TRUE
+                    return PDDL_TERNARY.FALSE
+                elif state["shared-"+tgt_index] == 't':
+                    return PDDL_TERNARY.TRUE
+                # else if the position of the survivor is the same as the agent
+                # then the agent can see the survivor
+                else:
+                    return PDDL_TERNARY.UNKNOWN
+            else:
+                return PDDL_TERNARY.TRUE
+            
             # if 'secret' in var_name:
             #     tgt_loc = state[f'shared-{tgt_index}']
             #     if type(tgt_loc) == str:
@@ -126,16 +140,16 @@ class ExternalFunction:
             #     if tgt_loc == 0:
             #         return PDDL_TERNARY.FALSE
 
-            tgt_loc = state[var_name]
+            # tgt_loc = state[var_name]
 
-            agt_loc_str = AGENT_LOC_PREFIX+agt_index
-            if agt_loc_str not in state.keys()\
-                or state[agt_loc_str] == None\
-                    or state[agt_loc_str] == EP_VALUE.HAVENT_SEEN\
-                        or state[agt_loc_str] == EP_VALUE.NOT_SEEING:
-                return PDDL_TERNARY.UNKNOWN
-            else:
-                agt_loc = int(state[agt_loc_str])
+            # agt_loc_str = AGENT_LOC_PREFIX+agt_index
+            # if agt_loc_str not in state.keys()\
+            #     or state[agt_loc_str] == None\
+            #         or state[agt_loc_str] == EP_VALUE.HAVENT_SEEN\
+            #             or state[agt_loc_str] == EP_VALUE.NOT_SEEING:
+            #     return PDDL_TERNARY.UNKNOWN
+            # else:
+            #     agt_loc = int(state[agt_loc_str])
 
             
             # extract necessary common constants from given domain

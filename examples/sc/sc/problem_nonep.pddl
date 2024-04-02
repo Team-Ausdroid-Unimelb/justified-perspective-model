@@ -10,11 +10,12 @@
     )
 
     (:variables
-        (room [a,b,c,s1,s2,s3])
+        (room [a,b,c,s1,s2,s3,r1,r2,r3,r4,r5,r6,r7,r8,r9])
         (observed [s1,s2,s3])
         (shared [s1,s2,s3])
         (searched [r1,r2,r3,r4,r5,r6,r7,r8,r9])
-        (room_num [r1,r2,r3,r4,r5,r6,r7,r8,r9])
+        ; (room_num [r1,r2,r3,r4,r5,r6,r7,r8,r9])
+        (connected [r1,r2,r3,r4,r5,r6,r7,r8,r9] [r1,r2,r3,r4,r5,r6,r7,r8,r9])
     )
 
     (:init
@@ -26,16 +27,25 @@
         (= (room s1) 'r9')
         (= (room s2) 'r4')
         (= (room s3) 'r3')
+        (= (room r1) 'r1')
+        (= (room r2) 'r2')
+        (= (room r3) 'r3')
+        (= (room r4) 'r4')
+        (= (room r5) 'r5')
+        (= (room r6) 'r6')
+        (= (room r7) 'r7')
+        (= (room r8) 'r8')
+        (= (room r9) 'r9')
         ; room number assignment
-        (= (room_num r1) 'r1')
-        (= (room_num r2) 'r2')
-        (= (room_num r3) 'r3')
-        (= (room_num r4) 'r4')
-        (= (room_num r5) 'r5')
-        (= (room_num r6) 'r6')
-        (= (room_num r7) 'r7')
-        (= (room_num r8) 'r8')
-        (= (room_num r9) 'r9')
+        ; (= (room_num r1) 'r1')
+        ; (= (room_num r2) 'r2')
+        ; (= (room_num r3) 'r3')
+        ; (= (room_num r4) 'r4')
+        ; (= (room_num r5) 'r5')
+        ; (= (room_num r6) 'r6')
+        ; (= (room_num r7) 'r7')
+        ; (= (room_num r8) 'r8')
+        ; (= (room_num r9) 'r9')
         ;connected rooms
         (= (connected r1 r2) 1)
         (= (connected r1 r4) 1)
@@ -100,7 +110,7 @@
         (= (:ontic (> (searched r3) 0)) 1)
         (= (:ontic (> (searched r4) 0)) 1)
         (= (:ontic (> (searched r5) 0)) 1)
-        (= (:ontic (> (searched r6) 0)) 1)
+        ; (= (:ontic (> (searched r6) 0)) 1)
         ; (= (:ontic (> (searched r7) 0)) 1)
         ; (= (:ontic (> (searched r8) 0)) 1)
         ; (= (:ontic (> (searched r9) 0)) 1)  
@@ -108,10 +118,11 @@
 
     (:domains
         (room enumerate ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9'])
-        (room_num enumerate ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9'])
+        ; (room_num enumerate ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9'])
         ; (room_num integer [1,9])
         (observed enumerate ['t','f'])
         (shared enumerate ['t','f'])
+        (connected integer [0,1])
         ; 0 indicates that room has not been searched neither occupied
         ; 1 indicates that room is occupied
         ; 2 indicates that room has been searched and it is not occupied 
